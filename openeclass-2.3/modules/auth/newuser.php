@@ -23,38 +23,30 @@
 *                       Panepistimiopolis Ilissia, 15784, Athens, Greece
 *                       eMail: info@openeclass.org
 * =========================================================================*/
-
-
 /*===========================================================================
 	newuser.php
 * @version $Id: newuser.php,v 1.35 2009-12-03 14:31:20 adia Exp $
 	@authors list: Karatzidis Stratos <kstratos@uom.gr>
 		       Vagelis Pitsioygas <vagpits@uom.gr>
 ==============================================================================
-
  	Purpose: The file displays the form that that the candidate user must fill
  	in with all the basic information.
-
 ==============================================================================
 */
-
 include '../../include/baseTheme.php';
 include '../../include/sendMail.inc.php';
 include 'auth.inc.php';
 $nameTools = $langUserDetails;
 // Main body
 $navigation[] = array("url"=>"registration.php", "name"=> $langNewUser);
-
 $tool_content = "";	// Initialise $tool_content
-
 if (isset($close_user_registration) and $close_user_registration == TRUE) {
 	$tool_content .= "<div class='td_main'>$langForbidden</div>";
         draw($tool_content,0);
 	exit;
  }
- 
-$lang = langname_to_code($language);
 
+$lang = langname_to_code($language);
 // display form
 if (!isset($submit)) {
 	// Main body
@@ -128,6 +120,11 @@ if (!isset($submit)) {
 	</form>";
 } else {
 
+	//unable script
+	$nom_form = preg_replace('/script/i', '+', $nom_form);
+	$prenom_form = preg_replace('/script/i', '+', $prenom_form);
+	$password = preg_replace('/script/i', '+', $password);
+	$am = preg_replace('/script/i', '+', $am);
 	// trim white spaces in the end and in the beginning of the word
 	$uname = preg_replace('/\ +/', ' ', trim(isset($_POST['uname'])?$_POST['uname']:''));
 	// registration
@@ -183,11 +180,11 @@ if (!isset($submit)) {
 				"$langManager $siteName \n$langTel $telephone \n" .
 				"$langEmail: $emailhelpdesk";
 		}
-	
+
 	send_mail('', '', '', $email, $emailsubject, $emailbody, $charset);
 	$registered_at = time();
 	$expires_at = time() + $durationAccount;  //$expires_at = time() + 31536000;
-	
+
 	// manage the store/encrypt process of password into database
 	$authmethods = array("2","3","4","5");
 	$uname = escapeSimple($uname);  // escape the characters: simple and double quote
@@ -199,7 +196,7 @@ if (!isset($submit)) {
 	}
 	$q1 = "INSERT INTO `$mysqlMainDb`.user
 	(user_id, nom, prenom, username, password, email, statut, department, am, registered_at, expires_at, lang)
-	VALUES ('NULL', '$nom_form', '$prenom_form', '$uname', '$password_encrypted', '$email','5',
+	VALUES ('NULL', '".mysql_real_escape_string($nom_form)."', '".mysql_real_escape_string($prenom_form)."', '$uname', '$password_encrypted', '$email','5',
 		'$department','$am',".$registered_at.",".$expires_at.",'$lang')";
 	$inscr_user = mysql_query($q1);
 	$last_id = mysql_insert_id();
@@ -216,7 +213,7 @@ if (!isset($submit)) {
 	$_SESSION['prenom'] = $prenom;
 	$_SESSION['nom'] = $nom;
 	$_SESSION['uname'] = $uname;
-	
+
 	// registration form
 	$tool_content .= "<table width='99%'><tbody><tr>" .
 			"<td class='well-done' height='60'>" .
@@ -234,8 +231,6 @@ if (!isset($submit)) {
 		$tool_content .= "<p><a href='$_SERVER[PHP_SELF]?prenom_form=$_POST[prenom_form]&nom_form=$_POST[nom_form]&uname=$_POST[uname]&email=$_POST[email]&am=$_POST[am]'>$langAgain</a></p>" .
 					"</td></tr></tbody></table><br /><br />";
 	}
-
 } // end of registration
-
 draw($tool_content,0);
 ?>
