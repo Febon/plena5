@@ -96,7 +96,7 @@ $tool_content .= "
     <td>
 
       <b>$langTypeMessage</b><br />
-      <input type='text' name='msg' size='80'style='border: 1px solid #CAC3B5; background: #fbfbfb;'>
+      <input type='text' name='msg' pattern='[a-zA-Z0-9-_.]+' size='80'style='border: 1px solid #CAC3B5; background: #fbfbfb;'>
       <input type='hidden' name='chatLine'>
       <input type='submit' value=' >> '>
 
